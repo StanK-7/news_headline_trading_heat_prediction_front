@@ -1,0 +1,17 @@
+[project]
+name = "news-headline-trading-heat-prediction-front"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Stanislav Korolev", email = "francet.stas@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+news-headline-trading-heat-prediction-front = "news_headline_trading_heat_prediction_front:main"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
