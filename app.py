@@ -83,11 +83,10 @@ text_input = ' '.join(all_inputs_list)
 # You can tweak these numbers to change the sizing of the buttons
 col1, col2, col3 = st.columns([4, 4, 2])
 
-API_PATH = 'http://localhost:8080'
 
 with col1:
     if st.button('Predict weather on the stock market', use_container_width=True, type="primary"):
-        url = API_PATH
+        url = st.secrets['API_URL']
         params = {
             'headline': text_input
         }
