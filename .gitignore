@@ -11,3 +11,6 @@ wheels/
 
 # Streamlit secrets
 secrets.toml
+
+# Automatically crated files mac
+.DS_Store
