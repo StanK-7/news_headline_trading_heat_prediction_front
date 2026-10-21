@@ -48,6 +48,9 @@ st.text('')
 if "num_inputs" not in st.session_state:
     st.session_state.num_inputs = 3
 
+if "model_choice" not in st.session_state:
+    st.session_state.model_choice = 'LinearSVC, stock price move > 1 STD'
+
 # 2. Callback function to increase the count when the last input is filled
 def check_last_input():
     last_index = st.session_state.num_inputs - 2
@@ -63,6 +66,7 @@ def reset_all_inputs():
             st.session_state[key] = ""
     # Reset the starting input field count back to 3
     st.session_state.num_inputs = 3
+    st.session_state.model_choice = 'LinearSVC, stock price move > 1 STD'
 
 # 4. Dynamically render the text inputs
 for i in range(st.session_state.num_inputs):
@@ -82,8 +86,15 @@ all_inputs_list = [st.session_state.get(f"input_{i}", "") for i in range(st.sess
 # Debug display to see your live list (you can remove this in production)
 # st.write("### Current Inputs List:", all_inputs_list)
 
-
+# Concatenate all headlines into one string
 text_input = ' '.join(all_inputs_list)
+
+
+# Create a selector to choose the model
+model_choice = st.selectbox('Select model', [
+    'LinearSVC, stock price move > 1 STD',
+    'LinearSVC, stock price move > 0.5 STD',
+    'LinearSVC, stock price move > 0.2 STD'])
 
 # Create 3 columns: Predict (width 1), Spacer (width 4), Clear All (width 2)
 # You can tweak these numbers to change the sizing of the buttons
@@ -99,7 +110,8 @@ with col1:
         if st.button('Predict weather on the stock market', use_container_width=True, type="primary"):
             url = st.secrets['API_URL']
             params = {
-                'headline': text_input
+                'headline': text_input,
+                'model_choice': model_choice
             }
 
             response = requests.get(f'{url}/predict', params=params)
@@ -142,4 +154,4 @@ st.text('')
 #     st.image("images/bull-bear-fighting-vector-icon-260nw-2501263021.webp")
 
 st.text('')
-st.image("images/bull-bear_pr.png", width="stretch")
+st.image("images/bull-bear_pr_background_removed.png", width="stretch")
