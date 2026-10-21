@@ -15,6 +15,7 @@ st.markdown(
 
 
 # Custom Styled Headline
+
 st.html("""
     <div style="
         background: linear-gradient(135deg, #2ec4b6, #0f4c5c);
@@ -28,14 +29,20 @@ st.html("""
             🔮 Smart stock market weather forecaster
         </h1>
         <p style="color: #e0f2f1; margin: 8px 0 0 0; font-family: sans-serif; font-size: 1rem; opacity: 0.9;">
-            Enter news headlines into the text fields below and click Predict to try your luck.
+            🐂   Enter news headlines into the text fields below and click Predict to try your luck   🐻
+
+
         </p>
     </div>
 """)
 
-st.title(
-    'Welcome to the stock market weather forecast'
-)
+# 🐂 Enter news headlines into the text area below. Our AI model will classify the market sentiment 🐻
+
+#  st.title(
+#     'Welcome to the stock market weather forecast', text_alignment="left"
+# )
+
+st.text('')
 
 # 1. Initialize the number of text inputs in session state
 if "num_inputs" not in st.session_state:
@@ -78,29 +85,61 @@ all_inputs_list = [st.session_state.get(f"input_{i}", "") for i in range(st.sess
 
 text_input = ' '.join(all_inputs_list)
 
-
 # Create 3 columns: Predict (width 1), Spacer (width 4), Clear All (width 2)
 # You can tweak these numbers to change the sizing of the buttons
-col1, col2, col3 = st.columns([4, 4, 2])
+col1, col2, col3 = st.columns([4, 2, 2])
 
 
 with col1:
-    if st.button('Predict weather on the stock market', use_container_width=True, type="primary"):
-        url = st.secrets['API_URL']
-        params = {
-            'headline': text_input
-        }
+    if text_input.strip() == '':
+        st.markdown("""
+        :red[Please enter at least one headline]
+        """)
+    else:
+        if st.button('Predict weather on the stock market', use_container_width=True, type="primary"):
+            url = st.secrets['API_URL']
+            params = {
+                'headline': text_input
+            }
 
-        response = requests.get(f'{url}/predict', params=params)
+            response = requests.get(f'{url}/predict', params=params)
 
-        if response.status_code == 200:
-            prediction = response.json()
-            weather = prediction['prediction']
-            st.markdown(f'Predicted weather: {weather}')
+            if response.status_code == 200:
+                prediction = response.json()
+                weather = prediction['prediction']
+                if weather == 1:
+                    st.markdown("""
+                        :red[It's going to be hot]
+                        """)
+                else:
+                    st.markdown("""
+                        :blue[It will be definitely cold]
+                                                """)
 
-        else:
-            st.error(f'API call failed with status {response.status_code}: {response.text}')
+                #st.markdown(f'Predicted weather: {weather}')
+
+            else:
+                st.error(f'API call failed with status {response.status_code}: {response.text}')
+# with col2:
+#     st.image("images/bull-bear-fighting-vector-icon-260nw-2501263021.webp")
+
 
 with col3:
     # Add the reset button using the callback
-    st.button("Reset", on_click=reset_all_inputs, use_container_width=True)
+    st.button("Reset", on_click=reset_all_inputs, use_container_width=True, type='secondary')
+
+
+
+
+st.text('')
+
+
+# Create 3 columns where the middle one holds the image
+# Adjust the weights [1, 2, 1] to make the image column wider or narrower
+# left_co, cent_co, right_co = st.columns([4, 1, 2])
+
+# with left_co:
+#     st.image("images/bull-bear-fighting-vector-icon-260nw-2501263021.webp")
+
+st.text('')
+st.image("images/bull-bear_pr.png", width="stretch")
