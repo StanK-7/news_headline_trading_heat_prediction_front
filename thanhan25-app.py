@@ -15,12 +15,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- Institutional Quant Terminal CSS ---
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+# --- Theme State & Toggle Logic ---
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
 
-:root {
+def toggle_theme():
+    st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
+
+dark_theme = """
     --bg-base: #07090E;
     --bg-panel: #0D111A;
     --bg-card: #111622;
@@ -35,13 +37,41 @@ st.markdown("""
     --amber: #F59E0B;
     --cyan: #38BDF8;
     --cobalt: #2563EB;
-}
+"""
+
+light_theme = """
+    --bg-base: #F8FAFC;
+    --bg-panel: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-input: #F1F5F9;
+    --border-subtle: #E2E8F0;
+    --border-focus: #3B82F6;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --emerald: #059669;
+    --rose: #E11D48;
+    --amber: #D97706;
+    --cyan: #0284C7;
+    --cobalt: #2563EB;
+"""
+
+active_theme = dark_theme if st.session_state.theme == "dark" else light_theme
+
+# Inject dynamic colors
+st.markdown(f"<style>:root {{ {active_theme} }}</style>", unsafe_allow_html=True)
+
+# --- Institutional Quant Terminal CSS ---
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 html, body, .stApp {
     background-color: var(--bg-base);
     background-image: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.06), transparent 55%);
     color: var(--text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .main .block-container {
@@ -70,6 +100,7 @@ header, #MainMenu, footer { visibility: hidden; }
     letter-spacing: 0.4px;
     flex-wrap: wrap;
     gap: 10px;
+    transition: all 0.3s ease;
 }
 .telemetry-group { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .status-indicator {
@@ -105,6 +136,7 @@ header, #MainMenu, footer { visibility: hidden; }
 .header-specs {
     display: flex; gap: 24px; background: var(--bg-panel);
     border: 1px solid var(--border-subtle); padding: 12px 18px; border-radius: 6px;
+    transition: all 0.3s ease;
 }
 .spec-item { display: flex; flex-direction: column; }
 .spec-label {
@@ -136,7 +168,7 @@ header, #MainMenu, footer { visibility: hidden; }
     font-size: 14px !important;
     padding: 11px 14px !important;
     font-family: 'Inter', sans-serif !important;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
 }
 .stTextInput > div > div > input:focus,
 .stTextArea > div > div > textarea:focus {
@@ -150,6 +182,7 @@ header, #MainMenu, footer { visibility: hidden; }
     border-radius: 6px !important;
     font-family: 'JetBrains Mono', monospace !important;
     font-size: 13px !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .stTextInput label, .stTextArea label, .stSelectbox label {
     color: var(--text-secondary) !important;
@@ -198,7 +231,6 @@ header, #MainMenu, footer { visibility: hidden; }
 .stButton > button[kind="secondary"]:hover {
     color: var(--text-primary) !important;
     border-color: #334155 !important;
-    background: #151C2C !important;
 }
 /* small segmented variant for the neural branch switch */
 .seg-a > button, .seg-b > button {
@@ -212,7 +244,7 @@ header, #MainMenu, footer { visibility: hidden; }
     background: var(--border-subtle); border: 1px solid var(--border-subtle);
     border-radius: 6px; overflow: hidden; margin-bottom: 24px;
 }
-.consensus-cell { background: var(--bg-panel); padding: 14px 18px; }
+.consensus-cell { background: var(--bg-panel); padding: 14px 18px; transition: background-color 0.3s ease; }
 .c-label {
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
     text-transform: uppercase; letter-spacing: 0.8px;
@@ -224,6 +256,7 @@ header, #MainMenu, footer { visibility: hidden; }
 .quant-card {
     background: var(--bg-card); border: 1px solid var(--border-subtle);
     border-radius: 8px; padding: 24px; height: 100%; position: relative;
+    transition: all 0.3s ease;
 }
 .quant-card-header {
     display: flex; justify-content: space-between; align-items: flex-start;
@@ -280,7 +313,7 @@ header, #MainMenu, footer { visibility: hidden; }
 .prob-meta { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 .prob-name { color: var(--text-secondary); }
 .prob-pct { color: var(--text-primary); font-weight: 600; }
-.prob-track { width: 100%; height: 5px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.prob-track { width: 100%; height: 5px; background: rgba(148, 163, 184, 0.2); border-radius: 2px; overflow: hidden; }
 .prob-fill-cyan { background: var(--cyan); height: 100%; }
 .prob-fill-emerald { background: var(--emerald); height: 100%; }
 .prob-fill-rose { background: var(--rose); height: 100%; }
@@ -294,8 +327,8 @@ header, #MainMenu, footer { visibility: hidden; }
 
 /* --- Placeholder / pending-calibration state --- */
 .placeholder-box {
-    border: 1px dashed #2A3550;
-    background: rgba(9, 12, 20, 0.5);
+    border: 1px dashed var(--border-subtle);
+    background: var(--bg-panel);
     border-radius: 6px;
     padding: 18px 20px;
     margin-top: 18px;
@@ -309,7 +342,7 @@ header, #MainMenu, footer { visibility: hidden; }
 .ph-route { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
 .skeleton {
     height: 6px; border-radius: 3px; margin-top: 12px;
-    background: linear-gradient(90deg, #141A28 25%, #1D2537 50%, #141A28 75%);
+    background: linear-gradient(90deg, var(--bg-input) 25%, var(--border-subtle) 50%, var(--bg-input) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.8s infinite linear;
 }
@@ -361,7 +394,7 @@ def parse_prediction_response(response: requests.Response) -> tuple[bool, dict, 
     return True, payload, ""
 
 
-def call_svc(url: str, headline: str, model_code: int, timeout: int = 15) -> dict:
+def call_svc(url: str, headline: str, model_code: float | int, timeout: int = 15) -> dict:
     started = time.perf_counter()
     result = {"ok": False, "val": None, "latency_ms": 0, "error": "", "data": {}}
     try:
@@ -457,7 +490,14 @@ def load_preset(headlines: list, summary: str):
     st.session_state.summary_input = summary
 
 
-# --- Top System Telemetry Bar ---
+# --- Top System Telemetry Bar & Theme Toggle ---
+t_col1, t_col2 = st.columns([1, 0.15])
+with t_col2:
+    st.toggle("☀️ Light Mode",
+              value=(st.session_state.theme == "light"),
+              on_change=toggle_theme,
+              key="theme_toggle")
+
 st.markdown(f"""
 <div class="telemetry-bar">
     <div class="telemetry-group">
@@ -595,10 +635,10 @@ with act_col3:
     char_count = len(concatenated_headlines) + len(summary_input.strip())
     branch_tag = "FINBERT-TONE" if st.session_state.dl_branch == "FINBERT-TONE" else "LSTM-W2V (code 7)"
     st.markdown(
-        f"<div style='font-family: JetBrains Mono, monospace; font-size: 11px; color: #64748B; padding-top: 12px;'>"
-        f"ACTIVE WIRES: <strong style='color:#94A3B8'>{len(active_headlines)}</strong> &nbsp;|&nbsp; "
-        f"PAYLOAD: <strong style='color:#94A3B8'>{char_count} CHARS</strong> &nbsp;|&nbsp; "
-        f"NEURAL BRANCH: <strong style='color:#94A3B8'>{branch_tag}</strong>"
+        f"<div style='font-family: JetBrains Mono, monospace; font-size: 11px; color: var(--text-muted); padding-top: 12px;'>"
+        f"ACTIVE WIRES: <strong style='color:var(--text-secondary)'>{len(active_headlines)}</strong> &nbsp;|&nbsp; "
+        f"PAYLOAD: <strong style='color:var(--text-secondary)'>{char_count} CHARS</strong> &nbsp;|&nbsp; "
+        f"NEURAL BRANCH: <strong style='color:var(--text-secondary)'>{branch_tag}</strong>"
         f"</div>",
         unsafe_allow_html=True,
     )
@@ -618,7 +658,7 @@ if predict_clicked:
         # Run the two independent services concurrently; each endpoint has its own timeout.
         with st.spinner("Dispatching payload to inference endpoints…"):
             with ThreadPoolExecutor(max_workers=2) as pool:
-                svc_future = pool.submit(call_svc, SVC_API_URL, concatenated_headlines, int(model_code))
+                svc_future = pool.submit(call_svc, SVC_API_URL, concatenated_headlines, model_code)
                 if dl_branch == "FINBERT-TONE":
                     neural_future = pool.submit(
                         call_finbert, DL_API_URL, concatenated_headlines, summary_input.strip()
@@ -653,22 +693,22 @@ if predict_clicked:
                 p_falling = float(probs.get("hot_falling", 0.0))
                 p_hot = float(neural_result["data"].get("prob_hot", p_rising + p_falling))
                 net_skew = (p_rising - p_falling) * 100
-                cell2_label, cell2_val, cell2_color = "FinBERT Event Volatility P(Hot)", f"{p_hot * 100:.1f}%", "#F1F5F9"
+                cell2_label, cell2_val, cell2_color = "FinBERT Event Volatility P(Hot)", f"{p_hot * 100:.1f}%", "var(--text-primary)"
                 skew_label = f"+{net_skew:.1f}% BULLISH" if net_skew >= 0 else f"{net_skew:.1f}% BEARISH"
-                skew_color = "#10B981" if net_skew > 5 else ("#F43F5E" if net_skew < -5 else "#94A3B8")
+                skew_color = "var(--emerald)" if net_skew > 5 else ("var(--rose)" if net_skew < -5 else "var(--text-secondary)")
                 cell3_val = f"<span style='color:{skew_color}'>{skew_label}</span>"
             else:
                 cell2_label = "LSTM Branch Output"
                 cell2_val = "HOT (1)" if nn_is_hot else "COLD (0)"
-                cell2_color = "#F59E0B" if nn_is_hot else "#38BDF8"
-                cell3_val = "<span style='color:#64748B'>N/A — BINARY HEAD</span>"
+                cell2_color = "var(--amber)" if nn_is_hot else "var(--cyan)"
+                cell3_val = "<span style='color:var(--text-muted)'>N/A — BINARY HEAD</span>"
 
             if svc_is_hot == nn_is_hot:
                 agreement_text = "CONVERGENT // HIGH" if svc_is_hot else "CONVERGENT // STABLE"
-                agreement_color = "#F59E0B" if svc_is_hot else "#38BDF8"
+                agreement_color = "var(--amber)" if svc_is_hot else "var(--cyan)"
             else:
                 agreement_text = "DIVERGENT // SPLIT SIGNAL"
-                agreement_color = "#F43F5E"
+                agreement_color = "var(--rose)"
 
             st.markdown(f"""
 <div class="consensus-strip">
@@ -725,7 +765,7 @@ if predict_clicked:
             <div class="regime-score-sub">Binary Class</div>
         </div>
     </div>
-    <p style="color: #94A3B8; font-size: 13px; line-height: 1.5; margin-bottom: 18px;">{regime_desc}</p>
+    <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 18px;">{regime_desc}</p>
     <table class="meta-table">
         <tr><td>DECISION BOUNDARY</td><td>|ΔPrice| &gt; {sigma_str}</td></tr>
         <tr><td>SENSITIVITY PROFILE</td><td>{sigma_desc}</td></tr>
@@ -784,7 +824,7 @@ if predict_clicked:
     <div class="spectrum-wrapper">
         <div class="spectrum-header">
             <span>3-CLASS SOFTMAX SPECTRUM</span>
-            <span>DOMINANT CLASS: <strong style="color:#F1F5F9">{native_3class}</strong></span>
+            <span>DOMINANT CLASS: <strong style="color:var(--text-primary)">{native_3class}</strong></span>
         </div>
         <div class="spectrum-bar">
             <div class="seg-cold" style="width: {cold_pct:.2f}%"></div>
@@ -838,7 +878,7 @@ if predict_clicked:
             <div class="regime-score-sub">Binary Class</div>
         </div>
     </div>
-    <p style="color: #94A3B8; font-size: 13px; line-height: 1.5; margin-bottom: 4px;">{regime_desc}</p>
+    <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 4px;">{regime_desc}</p>
     <table class="meta-table">
         <tr><td>EMBEDDINGS</td><td>Word2Vec (frozen, it=13)</td></tr>
         <tr><td>ENCODER</td><td>LSTM recurrent stack</td></tr>
