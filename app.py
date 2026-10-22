@@ -29,7 +29,7 @@ st.html("""
             🔮 Smart stock market weather forecaster
         </h1>
         <p style="color: #e0f2f1; margin: 8px 0 0 0; font-family: sans-serif; font-size: 1rem; opacity: 0.9;">
-            🐂   Enter news headlines into the text fields below and click Predict to try your luck   🐻
+            🐂  Enter news headlines into the text fields below and click Predict to try your luck  🐻
 
 
         </p>
@@ -91,15 +91,29 @@ text_input = ' '.join(all_inputs_list)
 
 
 # Create a selector to choose the model
-model_choice = st.selectbox('Select model', [
+model_selected = st.selectbox('Select model', [
     'LinearSVC, stock price move > 1 STD',
     'LinearSVC, stock price move > 0.5 STD',
-    'LinearSVC, stock price move > 0.2 STD'])
+    'LinearSVC, stock price move > 0.2 STD',
+    'LSTM',
+    'FinBERT-tone'])
+
+# Map selected model with the model file
+model_mapping = {
+    'LinearSVC, stock price move > 1 STD': 1,
+    'LinearSVC, stock price move > 0.5 STD': 5,
+    'LinearSVC, stock price move > 0.2 STD': 2,
+    'LSTM': 7,
+    'FinBERT-tone': 9}
+
+model_choice = model_mapping[model_selected]
 
 # Create 3 columns: Predict (width 1), Spacer (width 4), Clear All (width 2)
 # You can tweak these numbers to change the sizing of the buttons
 col1, col2, col3 = st.columns([4, 2, 2])
 
+lin_svm_model_range = [1, 5, 2]
+dl_model_range = [7, 8, 9]
 
 with col1:
     if text_input.strip() == '':
@@ -108,24 +122,35 @@ with col1:
         """)
     else:
         if st.button('Predict weather on the stock market', use_container_width=True, type="primary"):
-            url = st.secrets['API_URL']
-            params = {
-                'headline': text_input,
-                'model_choice': model_choice
-            }
+            response = ''
+            weather = ''
 
-            response = requests.get(f'{url}/predict', params=params)
+            if model_choice == 9:
+                url = 'https://trading-heat-api-398091546603.europe-west1.run.app'
+                params = {
+                    'headline': text_input
+                }
+                response = requests.get(f'{url}/dl_predict', params=params)
+
+            elif model_choice in lin_svm_model_range or model_choice == 7:
+                url = 'http://localhost:8000' # st.secrets['API_URL']
+                params = {
+                    'headline': text_input,
+                    'model_choice': model_choice
+                }
+
+                response = requests.get(f'{url}/predict', params=params)
 
             if response.status_code == 200:
                 prediction = response.json()
                 weather = prediction['prediction']
                 if weather == 1:
                     st.markdown("""
-                        :red[It's going to be hot]
+                        :red[It's likely to get hot ⚡]
                         """)
                 else:
                     st.markdown("""
-                        :blue[It will be definitely cold]
+                        :blue[Probably it will be cold ❄️]
                                                 """)
 
                 #st.markdown(f'Predicted weather: {weather}')
@@ -139,8 +164,6 @@ with col1:
 with col3:
     # Add the reset button using the callback
     st.button("Reset", on_click=reset_all_inputs, use_container_width=True, type='secondary')
-
-
 
 
 st.text('')
