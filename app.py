@@ -108,7 +108,6 @@ model_mapping = {
 
 model_choice = model_mapping[model_selected]
 
-
 # Create 3 columns: Predict (width 1), Spacer (width 4), Clear All (width 2)
 # You can tweak these numbers to change the sizing of the buttons
 col1, col2, col3 = st.columns([4, 2, 2])
@@ -127,7 +126,7 @@ with col1:
             weather = ''
 
             if model_choice == 9:
-                url = 'https://trading-heat-api-398091546603.europe-west1.run.app/'
+                url = 'https://trading-heat-api-398091546603.europe-west1.run.app'
                 params = {
                     'headline': text_input
                 }
@@ -165,8 +164,6 @@ with col1:
 with col3:
     # Add the reset button using the callback
     st.button("Reset", on_click=reset_all_inputs, use_container_width=True, type='secondary')
-
-
 
 
 st.text('')
