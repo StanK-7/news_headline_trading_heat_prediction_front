@@ -126,14 +126,14 @@ with col1:
             weather = ''
 
             if model_choice == 9:
-                url = 'https://trading-heat-api-398091546603.europe-west1.run.app'
+                url = 'https://trading-heat-api-398091546603.europe-west1.run.app' # st.secrets['FIN_BERT_URL']
                 params = {
                     'headline': text_input
                 }
                 response = requests.get(f'{url}/dl_predict', params=params)
 
             elif model_choice in lin_svm_model_range or model_choice == 7:
-                url = 'http://localhost:8000' # st.secrets['API_URL']
+                url = st.secrets['API_URL']
                 params = {
                     'headline': text_input,
                     'model_choice': model_choice
